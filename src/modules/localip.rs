@@ -4,24 +4,10 @@ use crate::config::ModuleConfig;
 use crate::configs::localip::LocalipConfig;
 use crate::formatter::StringFormatter;
 
-use std::io::Error;
-use std::net::UdpSocket;
-
-fn get_local_ipv4() -> Result<String, Error> {
-    let socket = UdpSocket::bind("0.0.0.0:0")?;
-    socket.connect("192.0.2.0:80")?;
-
-    let addr = socket.local_addr()?;
-
-    Ok(addr.ip().to_string())
-}
-
 /// Creates a module with the ipv4 address of the local machine.
 ///
-/// The IP address is gathered from the local endpoint of an UDP socket
-/// connected to a reserved IPv4 remote address, which is an accurate and fast
-/// way, especially if there are multiple IP addresses available.
-/// There should be no actual packets send over the wire.
+/// The `local-ip-address` crate is used to determine the local IP address of your machine.
+/// Avoid any external network connections to not compromise privacy.
 ///
 /// Will display the ip if all of the following criteria are met:
 ///     - `localip.disabled` is false
@@ -41,16 +27,11 @@ pub fn module<'a>(context: &'a Context) -> Option<Module<'a>> {
         return None;
     }
 
-    let localip = match get_local_ipv4() {
+    let localip = match local_ip_address::local_ip() {
         Ok(ip) => ip,
-        Err(e) => {
-            // ErrorKind::NetworkUnreachable is unstable
-            if cfg!(target_os = "linux") && e.raw_os_error() == Some(101) {
-                "NetworkUnreachable".to_string()
-            } else {
-                log::warn!("unable to determine local ipv4 address: {e}");
-                return None;
-            }
+        Err(err) => {
+            log::warn!("unable to determine local ipv4 address: {}", err);
+            return None;
         }
     };
 
@@ -61,7 +42,7 @@ pub fn module<'a>(context: &'a Context) -> Option<Module<'a>> {
                 _ => None,
             })
             .map(|variable| match variable {
-                "localipv4" => Some(Ok(&localip)),
+                "localipv4" => Some(Ok(localip.to_string())),
                 _ => None,
             })
             .parse(None, Some(context))
@@ -80,23 +61,12 @@ pub fn module<'a>(context: &'a Context) -> Option<Module<'a>> {
 
 #[cfg(test)]
 mod tests {
-    use crate::modules::localip::get_local_ipv4;
     use crate::test::ModuleRenderer;
     use nu_ansi_term::{Color, Style};
 
     macro_rules! get_localip {
         () => {
-            match get_local_ipv4() {
-                Ok(ip) => ip,
-                Err(e) => {
-                    println!(
-                        "localip was not tested because socket connection failed! \
-                        This could be caused by an unconventional network setup. \
-                        Error: {e}"
-                    );
-                    return;
-                }
-            }
+            local_ip_address::local_ip().unwrap().to_string()
         };
     }
 
