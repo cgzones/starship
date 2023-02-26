@@ -1,0 +1,35 @@
+[directory]
+truncation_length = 10
+truncate_to_repo = false
+repo_root_style = "bold bright-green"
+
+[env_var.XDG_SESSION_TYPE]
+#variable = "XDG_SESSION_TYPE"
+#default = "unknown XDG_SESSION_TYPE"
+[env_var.USER]
+#default = "unknown user"
+
+[git_metrics]
+disabled = false
+
+[hostname]
+ssh_only = false
+disabled = false
+
+[localip]
+ssh_only = false
+disabled = false
+
+[memory_usage]
+disabled = false
+threshold = -1
+
+[shlvl]
+disabled = false
+threshold = 1
+
+[status]
+disabled = false
+
+[username]
+show_always = true
