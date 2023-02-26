@@ -1,5 +1,10 @@
 #![warn(clippy::disallowed_methods)]
 
+mod sandbox;
+
+#[cfg(feature = "sandbox")]
+use crate::sandbox::init_sandbox;
+
 use clap::crate_authors;
 use std::io;
 use std::path::PathBuf;
@@ -123,6 +128,10 @@ fn main() {
     #[cfg(windows)]
     let _ = nu_ansi_term::enable_ansi_support();
     logger::init();
+
+    #[cfg(feature = "sandbox")]
+    init_sandbox();
+
     init_global_threadpool();
 
     // Delete old log files
