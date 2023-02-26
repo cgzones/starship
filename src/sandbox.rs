@@ -119,9 +119,7 @@ fn init_seccomp() {
 
     const JSON_FILTER: &str = r#"{
     "main": {
-        "mismatch_action": {
-            "errno" : 1
-        },
+        "mismatch_action": "trap",
         "match_action": "allow",
         "filter": [
             {
