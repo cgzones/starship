@@ -4,16 +4,8 @@ use crate::config::ModuleConfig;
 use crate::configs::localip::LocalipConfig;
 use crate::formatter::StringFormatter;
 
-use std::io::Error;
-use std::net::UdpSocket;
-
-fn get_local_ipv4() -> Result<String, Error> {
-    let socket = UdpSocket::bind("0.0.0.0:0")?;
-    socket.connect("192.0.2.0:80")?;
-
-    let addr = socket.local_addr()?;
-
-    Ok(addr.ip().to_string())
+fn get_local_ipv4() -> Result<String, local_ip_address::Error> {
+    Ok(local_ip_address::local_ip()?.to_string())
 }
 
 /// Creates a module with the ipv4 address of the local machine.
@@ -43,15 +35,13 @@ pub fn module<'a>(context: &'a Context) -> Option<Module<'a>> {
 
     let localip = match get_local_ipv4() {
         Ok(ip) => ip,
-        Err(e) => {
-            // ErrorKind::NetworkUnreachable is unstable
-            if cfg!(target_os = "linux") && e.raw_os_error() == Some(101) {
-                "NetworkUnreachable".to_string()
-            } else {
+        Err(e) => match e {
+            local_ip_address::Error::LocalIpAddressNotFound => "NetworkUnreachable".to_string(),
+            _ => {
                 log::warn!("unable to determine local ipv4 address: {e}");
                 return None;
             }
-        }
+        },
     };
 
     let parsed = StringFormatter::new(config.format).and_then(|formatter| {

@@ -146,9 +146,6 @@ fn init_seccomp() {
                 "syscall": "close"
             },
             {
-                "syscall": "connect"
-            },
-            {
                 "syscall": "dup2"
             },
             {
@@ -294,6 +291,9 @@ fn init_seccomp() {
                 "syscall": "readlink"
             },
             {
+                "syscall": "recvfrom"
+            },
+            {
                 "syscall": "rseq"
             },
             {
@@ -312,6 +312,9 @@ fn init_seccomp() {
                 "syscall": "sched_yield"
             },
             {
+                "syscall": "sendto"
+            },
+            {
                 "syscall": "set_robust_list"
             },
             {
@@ -327,22 +330,22 @@ fn init_seccomp() {
                         "index": 0,
                         "type": "dword",
                         "op": "eq",
-                        "val": 2,
-                        "comment": "PF_INET"
+                        "val": 16,
+                        "comment": "AF_NETLINK"
                     },
                     {
                         "index": 1,
                         "type": "dword",
                         "op": "eq",
-                        "val": 524290,
-                        "comment": "SOCK_DGRAM|SOCK_CLOEXEC"
+                        "val": 3,
+                        "comment": "SOCK_RAW"
                     },
                     {
                         "index": 2,
                         "type": "dword",
                         "op": "eq",
                         "val": 0,
-                        "comment": "IPPROTO_IP"
+                        "comment": "NETLINK_ROUTE"
                     }
                 ]
             },
