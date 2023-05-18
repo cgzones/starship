@@ -29,7 +29,7 @@ The minimal, blazing-fast, and infinitely customizable prompt for any shell! ☄
 """
 
 [features]
-default = ["battery", "notify", "gix-max-perf"]
+default = ["battery", "gix-max-perf"]
 battery = ["starship-battery"]
 config-schema = ["schemars"]
 notify = ["notify-rust"]
@@ -131,6 +131,7 @@ tempfile = "3.12.0"
 codegen-units = 1
 lto = true
 strip = true
+panic = "abort"
 
 [[bin]]
 name = "starship"
