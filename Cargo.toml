@@ -29,7 +29,7 @@ The minimal, blazing-fast, and infinitely customizable prompt for any shell! ☄
 """
 
 [features]
-default = ["battery", "notify"]
+default = ["battery"]
 battery = ["starship-battery"]
 config-schema = ["schemars"]
 notify = ["notify-rust"]
@@ -125,6 +125,7 @@ tempfile = "3.23.0"
 codegen-units = 1
 lto = true
 strip = true
+panic = "abort"
 
 [profile.bench]
 codegen-units = 16
