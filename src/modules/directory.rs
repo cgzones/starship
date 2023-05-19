@@ -66,15 +66,15 @@ pub fn module<'a>(context: &'a Context) -> Option<Module<'a>> {
 
     let mut is_truncated = dir_string.is_some();
 
+    // Apply path substitutions
+    let display_dir = substitute_path(display_dir, &config.substitutions);
+
     // the home directory if required.
     let dir_string = dir_string
-        .unwrap_or_else(|| contract_path(display_dir, &home_dir, config.home_symbol).to_string());
+        .unwrap_or_else(|| contract_path(&display_dir, &home_dir, config.home_symbol).to_string());
 
     #[cfg(windows)]
     let dir_string = remove_extended_path_prefix(dir_string);
-
-    // Apply path substitutions
-    let dir_string = substitute_path(dir_string, &config.substitutions);
 
     // Truncate the dir string to the maximum number of path components
     let dir_string =
@@ -90,7 +90,7 @@ pub fn module<'a>(context: &'a Context) -> Option<Module<'a>> {
         // fish-style path contraction together
         if config.fish_style_pwd_dir_length > 0 && config.substitutions.is_empty() {
             // If user is using fish style path, we need to add the segment first
-            let contracted_home_dir = contract_path(display_dir, &home_dir, config.home_symbol);
+            let contracted_home_dir = contract_path(&display_dir, &home_dir, config.home_symbol);
             to_fish_style(
                 config.fish_style_pwd_dir_length as usize,
                 &contracted_home_dir,
@@ -105,7 +105,7 @@ pub fn module<'a>(context: &'a Context) -> Option<Module<'a>> {
 
     let path_vec = match &repo.and_then(|r| r.workdir.as_ref()) {
         Some(repo_root) if config.repo_root_style.is_some() => {
-            let contracted_path = contract_repo_path(display_dir, repo_root)?;
+            let contracted_path = contract_repo_path(&display_dir, repo_root)?;
             let repo_path_vec: Vec<&str> = contracted_path.split('/').collect();
             let after_repo_root = contracted_path.replacen(repo_path_vec[0], "", 1);
             let num_segments_after_root = after_repo_root.split('/').count();
@@ -291,12 +291,12 @@ fn real_path<P: AsRef<Path>>(path: P) -> PathBuf {
 ///
 /// Given a list of (from, to) pairs, this will perform the string
 /// substitutions, in order, on the path. Any non-pair of strings is ignored.
-fn substitute_path(dir_string: String, substitutions: &IndexMap<String, &str>) -> String {
-    let mut substituted_dir = dir_string;
+fn substitute_path(dir_string: &Path, substitutions: &IndexMap<String, &str>) -> PathBuf {
+    let mut substituted_dir = format!("{}", dir_string.display());
     for substitution_pair in substitutions {
         substituted_dir = substituted_dir.replace(substitution_pair.0, substitution_pair.1);
     }
-    substituted_dir
+    PathBuf::from(substituted_dir)
 }
 
 /// Takes part before contracted path and replaces it with fish style path
@@ -442,13 +442,13 @@ mod tests {
 
     #[test]
     fn substitute_prefix_and_middle() {
-        let full_path = "/absolute/path/foo/bar/baz";
+        let full_path = Path::new("/absolute/path/foo/bar/baz");
         let mut substitutions = IndexMap::new();
         substitutions.insert("/absolute/path".to_string(), "");
         substitutions.insert("/bar/".to_string(), "/");
 
-        let output = substitute_path(full_path.to_string(), &substitutions);
-        assert_eq!(output, "/foo/baz");
+        let output = substitute_path(full_path, &substitutions);
+        assert_eq!(output, Path::new("/foo/baz"));
     }
 
     #[test]
@@ -687,6 +687,21 @@ mod tests {
                 .bold()
                 .paint(convert_path_sep(&format!("/foo/bar/{strange_sub}/path")))
         ));
+
+        assert_eq!(expected, actual);
+    }
+
+    #[test]
+    fn home_symlink_substitution() {
+        let actual = ModuleRenderer::new("directory")
+            .env("HOME", "/home/username")
+            .path("/var/home/username/foo")
+            .config(toml::toml! {
+                [directory.substitutions]
+                "/var/home" = "/home"
+            })
+            .collect();
+        let expected = Some(format!("{} ", Color::Cyan.bold().paint("~/foo")));
 
         assert_eq!(expected, actual);
     }
