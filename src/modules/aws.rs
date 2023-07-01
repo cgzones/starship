@@ -86,11 +86,11 @@ fn get_profile_creds<'a>(
 
 fn get_aws_region_from_config(
     context: &Context,
-    aws_profile: &Option<Profile>,
+    aws_profile: Option<&Profile>,
     aws_config: &AwsConfigFile,
 ) -> Option<Region> {
     let config = get_config(context, aws_config)?;
-    let section = get_profile_config(config, aws_profile.as_ref())?;
+    let section = get_profile_config(config, aws_profile)?;
 
     section.get("region").map(std::borrow::ToOwned::to_owned)
 }
@@ -118,9 +118,9 @@ fn get_aws_profile_and_region(
         (None, Some(r)) => (None, Some(r)),
         (Some(p), None) => (
             Some(p.clone()),
-            get_aws_region_from_config(context, &Some(p), aws_config),
+            get_aws_region_from_config(context, Some(&p), aws_config),
         ),
-        (None, None) => (None, get_aws_region_from_config(context, &None, aws_config)),
+        (None, None) => (None, get_aws_region_from_config(context, None, aws_config)),
     }
 }
 
