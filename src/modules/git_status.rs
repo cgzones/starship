@@ -158,20 +158,23 @@ impl<'a> GitStatusInfo<'a> {
         self.get_repo_status().map(|data| (data.ahead, data.behind))
     }
 
-    pub fn get_repo_status(&self) -> &Option<RepoStatus> {
-        self.repo_status.get_or_init(|| {
-            match get_repo_status(self.context, self.repo, &self.config) {
-                Some(repo_status) => Some(repo_status),
-                None => {
-                    log::debug!("get_repo_status: git status execution failed");
-                    None
-                }
-            }
-        })
+    pub fn get_repo_status(&self) -> Option<&RepoStatus> {
+        self.repo_status
+            .get_or_init(
+                || match get_repo_status(self.context, self.repo, &self.config) {
+                    Some(repo_status) => Some(repo_status),
+                    None => {
+                        log::debug!("get_repo_status: git status execution failed");
+                        None
+                    }
+                },
+            )
+            .as_ref()
     }
 
-    pub fn get_stashed(&self) -> &Option<usize> {
-        self.stashed_count
+    pub fn get_stashed(&self) -> Option<usize> {
+        *self
+            .stashed_count
             .get_or_init(|| match get_stashed_count(self.repo) {
                 Some(stashed_count) => Some(stashed_count),
                 None => {
