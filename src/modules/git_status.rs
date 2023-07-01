@@ -63,7 +63,7 @@ pub fn module<'a>(context: &'a Context) -> Option<Module<'a>> {
             .map_variables_to_segments(|variable: &str| {
                 let segments = match variable {
                     "stashed" => info.get_stashed().and_then(|count| {
-                        format_count(config.stashed, "git_status.stashed", context, count)
+                        format_count(config.stashed, "git_status.stashed", context, *count)
                     }),
                     "ahead_behind" => info.get_ahead_behind().and_then(|(ahead, behind)| {
                         let (ahead, behind) = (ahead?, behind?);
@@ -168,13 +168,15 @@ impl<'a> GitStatusInfo<'a> {
             .as_deref()
     }
 
-    pub fn get_stashed(&self) -> &Option<usize> {
-        self.stashed_count.get_or_init(|| {
-            get_stashed_count(self.repo).or_else(|| {
-                log::debug!("get_stashed_count: git stash execution failed");
-                None
+    pub fn get_stashed(&self) -> Option<&usize> {
+        self.stashed_count
+            .get_or_init(|| {
+                get_stashed_count(self.repo).or_else(|| {
+                    log::debug!("get_stashed_count: git stash execution failed");
+                    None
+                })
             })
-        })
+            .as_ref()
     }
 
     pub fn get_conflicted(&self) -> Option<usize> {
