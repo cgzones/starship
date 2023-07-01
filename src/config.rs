@@ -123,7 +123,7 @@ pub struct StarshipConfig {
 
 impl StarshipConfig {
     /// Initialize the Config struct
-    pub fn initialize(config_file_path: &Option<OsString>) -> Self {
+    pub fn initialize(config_file_path: Option<&OsString>) -> Self {
         Self::config_from_file(config_file_path)
             .map(|config| Self {
                 config: Some(config),
@@ -132,7 +132,7 @@ impl StarshipConfig {
     }
 
     /// Create a config from a starship configuration file
-    fn config_from_file(config_file_path: &Option<OsString>) -> Option<toml::Table> {
+    fn config_from_file(config_file_path: Option<&OsString>) -> Option<toml::Table> {
         let toml_content = Self::read_config_content_as_str(config_file_path)?;
 
         match toml::from_str(&toml_content) {
@@ -147,7 +147,7 @@ impl StarshipConfig {
         }
     }
 
-    pub fn read_config_content_as_str(config_file_path: &Option<OsString>) -> Option<String> {
+    pub fn read_config_content_as_str(config_file_path: Option<&OsString>) -> Option<String> {
         if config_file_path.is_none() {
             log::debug!(
                 "Unable to determine `config_file_path`. Perhaps `utils::home_dir` is not defined on your platform?"
@@ -919,7 +919,7 @@ mod tests {
     fn read_config_no_config_file_path_provided() {
         assert_eq!(
             None,
-            StarshipConfig::read_config_content_as_str(&None),
+            StarshipConfig::read_config_content_as_str(None),
             "if the platform doesn't have utils::home_dir(), it should return None"
         );
     }

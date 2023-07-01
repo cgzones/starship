@@ -127,7 +127,7 @@ impl<'a> Context<'a> {
         logical_path: PathBuf,
         env: Env<'a>,
     ) -> Context<'a> {
-        let config = StarshipConfig::initialize(&get_config_path_os(&env));
+        let config = StarshipConfig::initialize(get_config_path_os(&env).as_ref());
 
         // If the vector is zero-length, we should pretend that we didn't get a
         // pipestatus at all (since this is the input `--pipestatus=""`)
