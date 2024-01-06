@@ -242,7 +242,7 @@ fn get_repo_status(
         args.push("--ignore-submodules=untracked");
     }
 
-    let status_output = repo.exec_git(context, &args)?;
+    let status_output = repo.exec_git(context, &args)?; // TODO
     let statuses = status_output.stdout.lines();
 
     statuses.for_each(|status| {
