@@ -267,7 +267,7 @@ fn get_repo_status(
             args.push("--ignore-submodules=untracked");
         }
 
-        let status_output = repo.exec_git(context, &args)?;
+        let status_output = repo.exec_git(context, &args)?; // TODO
         let statuses = status_output.stdout.lines();
 
         statuses.for_each(|status| {
@@ -362,7 +362,7 @@ fn get_repo_status(
                         .into_iter()
                         .map(ToOwned::to_owned)
                         .chain(Some(branch_name)),
-                )?;
+                )?; // TODO
                 if let Some(line) = output.stdout.lines().next() {
                     repo_status.set_ahead_behind_for_each_ref(line);
                 }

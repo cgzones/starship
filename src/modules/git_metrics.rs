@@ -40,7 +40,7 @@ pub fn module<'a>(context: &'a Context) -> Option<Module<'a>> {
             git_args.push("--ignore-submodules");
         }
 
-        let diff = repo.exec_git(context, &git_args)?.stdout;
+        let diff = repo.exec_git(context, &git_args)?.stdout; // TODO
 
         GitDiff::parse(&diff)
     } else {
