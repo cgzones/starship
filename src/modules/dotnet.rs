@@ -273,7 +273,7 @@ fn get_dotnet_file_type(path: &Path) -> Option<FileType> {
         Some(GLOBAL_JSON_FILE) => return Some(FileType::GlobalJson),
         Some(PROJECT_JSON_FILE) => return Some(FileType::ProjectJson),
         _ => (),
-    };
+    }
 
     let extension_lower = map_str_to_lower(path.extension());
 

@@ -2,9 +2,9 @@
 #![allow(clippy::upper_case_acronyms)]
 
 use pest::{Parser, error::Error, iterators::Pair};
-use pest_derive::*;
+use pest_derive::Parser;
 
-use super::model::*;
+use super::model::{FormatElement, StyleElement, TextGroup};
 
 #[derive(Parser)]
 #[grammar = "formatter/spec.pest"]

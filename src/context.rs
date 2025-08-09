@@ -88,6 +88,7 @@ impl<'a> Context<'a> {
     /// Identify the current working directory and create an instance of Context
     /// for it. "logical-path" is used when a shell allows the "current working directory"
     /// to be something other than a file system path (like powershell provider specific paths).
+    #[must_use]
     pub fn new(arguments: Properties, target: Target) -> Self {
         let shell = Context::get_shell();
 
@@ -212,6 +213,7 @@ impl<'a> Context<'a> {
     }
 
     /// Convert a `~` in a path to the home directory
+    #[must_use]
     pub fn expand_tilde(dir: PathBuf) -> PathBuf {
         if dir.starts_with("~") {
             let without_home = dir.strip_prefix("~").unwrap();
@@ -576,11 +578,12 @@ impl DirContents {
                 Ok(entry) => {
                     let path = PathBuf::from(entry.path().strip_prefix(base_path).unwrap());
 
-                    let is_dir = match follow_symlinks {
-                        true => entry.path().is_dir(),
-                        false => fs::symlink_metadata(entry.path())
+                    let is_dir = if follow_symlinks {
+                        entry.path().is_dir()
+                    } else {
+                        fs::symlink_metadata(entry.path())
                             .map(|m| m.is_dir())
-                            .unwrap_or(false),
+                            .unwrap_or(false)
                     };
 
                     if is_dir {
@@ -648,51 +651,61 @@ impl DirContents {
         self.files.iter()
     }
 
+    #[must_use]
     pub fn has_file(&self, path: &str) -> bool {
         self.files.contains(Path::new(path))
     }
 
+    #[must_use]
     pub fn has_file_name(&self, name: &str) -> bool {
         self.file_names.contains(name)
     }
 
+    #[must_use]
     pub fn has_folder(&self, path: &str) -> bool {
         self.folders.contains(Path::new(path))
     }
 
+    #[must_use]
     pub fn has_extension(&self, ext: &str) -> bool {
         self.extensions.contains(ext)
     }
 
+    #[must_use]
     pub fn has_any_positive_file_name(&self, names: &[&str]) -> bool {
         names
             .iter()
             .any(|name| !name.starts_with('!') && self.has_file_name(name))
     }
 
+    #[must_use]
     pub fn has_any_positive_folder(&self, paths: &[&str]) -> bool {
         paths
             .iter()
             .any(|path| !path.starts_with('!') && self.has_folder(path))
     }
 
+    #[must_use]
     pub fn has_any_positive_extension(&self, exts: &[&str]) -> bool {
         exts.iter()
             .any(|ext| !ext.starts_with('!') && self.has_extension(ext))
     }
 
+    #[must_use]
     pub fn has_no_negative_file_name(&self, names: &[&str]) -> bool {
         !names
             .iter()
             .any(|name| name.starts_with('!') && self.has_file_name(&name[1..]))
     }
 
+    #[must_use]
     pub fn has_no_negative_folder(&self, paths: &[&str]) -> bool {
         !paths
             .iter()
             .any(|path| path.starts_with('!') && self.has_folder(&path[1..]))
     }
 
+    #[must_use]
     pub fn has_no_negative_extension(&self, exts: &[&str]) -> bool {
         !exts
             .iter()
@@ -813,6 +826,7 @@ impl<'a> ScanDir<'a> {
 
     /// based on the current `PathBuf` check to see
     /// if any of this criteria match or exist and returning a boolean
+    #[must_use]
     pub fn is_match(&self) -> bool {
         // if there exists a file with a file/folder/ext we've said we don't want,
         // fail the match straight away
@@ -852,6 +866,7 @@ impl<'a> ScanAncestors<'a> {
     /// files or folders is found.
     ///
     /// The scan does not cross device boundaries.
+    #[must_use]
     pub fn scan(&self) -> Option<PathBuf> {
         let path = self.path;
         let initial_device_id = path.device_id();

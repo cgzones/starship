@@ -40,7 +40,9 @@ pub fn module<'a>(context: &'a Context) -> Option<Module<'a>> {
                     s.lines()
                         .find_map(|l| {
                             if let Some(name_val) = l.strip_prefix("name=\"") {
-                                return name_val.strip_suffix('"').map(|n| n.to_string());
+                                return name_val
+                                    .strip_suffix('"')
+                                    .map(std::string::ToString::to_string);
                             }
 
                             l.starts_with("image=\"").then(|| {

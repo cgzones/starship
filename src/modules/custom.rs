@@ -85,9 +85,9 @@ pub fn module<'a>(name: &str, context: &'a Context) -> Option<Module<'a>> {
             });
 
         if config.unsafe_no_escape {
-            formatter = formatter.map_no_escaping(variables_closure)
+            formatter = formatter.map_no_escaping(variables_closure);
         } else {
-            formatter = formatter.map(variables_closure)
+            formatter = formatter.map(variables_closure);
         }
 
         formatter.parse(None, Some(context))
@@ -98,7 +98,7 @@ pub fn module<'a>(name: &str, context: &'a Context) -> Option<Module<'a>> {
         Err(error) => {
             log::warn!("Error in module `custom.{name}`:\n{error}");
         }
-    };
+    }
     Some(module)
 }
 
@@ -125,7 +125,7 @@ fn get_config<'a>(module_name: &str, context: &'a Context<'a>) -> Option<&'a tom
         log::debug!(
             "top level format contains custom module {module_name:?}, but no configuration was provided.",
         );
-    };
+    }
     None
 }
 
@@ -208,7 +208,7 @@ fn shell_command(cmd: &str, config: &CustomConfig, context: &Context) -> Option<
     if !config.ignore_timeout {
         output = output
             .time_limit(Duration::from_millis(context.root_config.command_timeout))
-            .terminate_for_timeout()
+            .terminate_for_timeout();
     }
 
     match output.wait().ok()? {

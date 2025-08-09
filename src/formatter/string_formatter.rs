@@ -9,7 +9,7 @@ use crate::config::{Style, parse_style_string};
 use crate::context::{Context, Shell};
 use crate::segment::Segment;
 
-use super::model::*;
+use super::model::{FormatElement, StyleElement, StyleVariableHolder, TextGroup, VariableHolder};
 use super::parser::{Rule, parse};
 
 #[derive(Clone)]
@@ -88,6 +88,7 @@ impl<'a> StringFormatter<'a> {
     }
 
     /// A `StringFormatter` that does no formatting, parse just returns the raw text
+    #[must_use]
     pub fn raw(text: &'a str) -> Self {
         Self {
             format: vec![FormatElement::Text(text.into())],

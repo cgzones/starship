@@ -80,7 +80,7 @@ fn undistract_me<'a>(
 
             if !in_graphical_session {
                 return module;
-            };
+            }
         }
 
         let body = format!(

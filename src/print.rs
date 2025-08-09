@@ -63,7 +63,7 @@ where
 fn test_grapheme_aware_width() {
     // UnicodeWidthStr::width would return 8
     assert_eq!(2, "👩‍👩‍👦‍👦".width_graphemes());
-    assert_eq!(1, "Ü".width_graphemes());
+    assert_eq!(1, "Ü".width_graphemes());
     assert_eq!(11, "normal text".width_graphemes());
     // Magenta string test
     assert_eq!(11, "\x1B[35;6mnormal text".width_graphemes());
@@ -402,6 +402,7 @@ fn should_add_implicit_module(
         .unwrap_or(false)
 }
 
+#[must_use]
 pub fn format_duration(duration: &Duration) -> String {
     let milis = duration.as_millis();
     if milis == 0 {

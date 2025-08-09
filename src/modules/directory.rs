@@ -490,7 +490,7 @@ mod tests {
 
     #[test]
     fn fish_style_with_unicode() {
-        let path = "~/starship/tmp/目录/a̐éö̲/目录";
+        let path = "~/starship/tmp/目录/a̐éö̲/目录";
         let output = to_fish_style(1, path, "目录");
         assert_eq!(output, "~/s/t/目/a̐/");
     }

@@ -151,16 +151,19 @@ impl<'a> Module<'a> {
     }
 
     /// Get module's name
+    #[must_use]
     pub fn get_name(&self) -> &String {
         &self.name
     }
 
     /// Get module's description
+    #[must_use]
     pub fn get_description(&self) -> &String {
         &self.description
     }
 
     /// Whether a module has non-empty segments
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.segments
             .iter()
@@ -175,10 +178,12 @@ impl<'a> Module<'a> {
 
     /// Returns a vector of colored `AnsiString` elements to be later used with
     /// `AnsiStrings()` to optimize ANSI codes
+    #[must_use]
     pub fn ansi_strings(&self) -> Vec<AnsiString<'_>> {
         self.ansi_strings_for_width(None)
     }
 
+    #[must_use]
     pub fn ansi_strings_for_width(&self, width: Option<usize>) -> Vec<AnsiString<'_>> {
         let mut iter = self.segments.iter().peekable();
         let mut ansi_strings: Vec<AnsiString> = Vec::new();
@@ -206,19 +211,16 @@ where
     let mut prev_style: Option<AnsiStyle> = None;
 
     for segment in segments {
-        match segment {
-            Segment::Fill(fs) => {
-                chunks.push((current, fs));
-                current = Vec::new();
-                prev_style = None;
-            }
-            _ => {
-                used += segment.width_graphemes();
-                let current_segment_string = segment.ansi_string(prev_style.as_ref());
+        if let Segment::Fill(fs) = segment {
+            chunks.push((current, fs));
+            current = Vec::new();
+            prev_style = None;
+        } else {
+            used += segment.width_graphemes();
+            let current_segment_string = segment.ansi_string(prev_style.as_ref());
 
-                prev_style = Some(*current_segment_string.style_ref());
-                current.push(current_segment_string);
-            }
+            prev_style = Some(*current_segment_string.style_ref());
+            current.push(current_segment_string);
         }
 
         if matches!(segment, Segment::LineTerm) {

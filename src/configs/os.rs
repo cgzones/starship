@@ -18,6 +18,7 @@ pub struct OSConfig<'a> {
 }
 
 impl<'a> OSConfig<'a> {
+    #[must_use]
     pub fn get_symbol(&self, key: Type) -> Option<&'a str> {
         self.symbols.get(&key).copied()
     }

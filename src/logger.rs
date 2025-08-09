@@ -121,7 +121,7 @@ impl Default for StarshipLogger {
 
         if let Err(err) = fs::create_dir_all(&log_dir) {
             eprintln!("Unable to create log dir {log_dir:?}: {err:?}!");
-        };
+        }
         let session_log_file = log_dir.join(format!(
             "session_{}.log",
             env::var("STARSHIP_SESSION_KEY").unwrap_or_default()
@@ -225,7 +225,7 @@ impl log::Log for StarshipLogger {
             };
             if let Err(err) = writeln!(file_handle, "{to_print}") {
                 eprintln!("Unable to write to session log file {err:?}!",);
-            };
+            }
         }
 
         // Print messages to stderr
