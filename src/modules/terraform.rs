@@ -147,7 +147,7 @@ on darwin_arm64
         assert_eq!(
             parse_terraform_version(input),
             Some("1.8.0-alpha1".to_string())
-        )
+        );
     }
 
     #[test]

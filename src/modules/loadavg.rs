@@ -28,7 +28,7 @@ pub fn module<'a>(context: &'a Context) -> Option<Module<'a>> {
     let loadavg = match system.load_average() {
         Ok(load) => load,
         Err(e) => {
-            log::warn!("Failed to retrieve loadavg: {}", e);
+            log::warn!("Failed to retrieve loadavg: {e}");
             return None;
         }
     };
@@ -63,7 +63,7 @@ pub fn module<'a>(context: &'a Context) -> Option<Module<'a>> {
     module.set_segments(match parsed {
         Ok(segments) => segments,
         Err(error) => {
-            log::warn!("Error in module `loadavg`:\n{}", error);
+            log::warn!("Error in module `loadavg`:\n{error}");
             return None;
         }
     });
@@ -114,9 +114,9 @@ mod test {
             .collect();
 
         if System::new().load_average().is_ok() {
-            assert!(output.is_some())
+            assert!(output.is_some());
         } else {
-            assert!(output.is_none())
+            assert!(output.is_none());
         }
     }
 
@@ -135,7 +135,7 @@ mod test {
             })
             .collect();
 
-        assert!(output.is_none())
+        assert!(output.is_none());
     }
 
     #[test]
@@ -154,9 +154,9 @@ mod test {
             .collect();
 
         if System::new().load_average().is_ok() {
-            assert!(output.is_some())
+            assert!(output.is_some());
         } else {
-            assert!(output.is_none())
+            assert!(output.is_none());
         }
     }
 }

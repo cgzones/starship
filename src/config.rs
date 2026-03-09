@@ -124,6 +124,7 @@ pub struct StarshipConfig {
 
 impl StarshipConfig {
     /// Initialize the Config struct
+    #[must_use]
     pub fn initialize(config_file_path: Option<&OsStr>) -> Self {
         Self::config_from_file(config_file_path)
             .map(|config| Self {
@@ -148,6 +149,7 @@ impl StarshipConfig {
         }
     }
 
+    #[must_use]
     pub fn read_config_content_as_str(config_file_path: Option<&OsStr>) -> Option<String> {
         if config_file_path.is_none() {
             log::debug!(
@@ -175,6 +177,7 @@ impl StarshipConfig {
     }
 
     /// Get the subset of the table for a module by its name
+    #[must_use]
     pub fn get_module_config(&self, module_name: &str) -> Option<&Value> {
         let module_config = self.get_config(&[module_name]);
         if module_config.is_some() {
@@ -188,6 +191,7 @@ impl StarshipConfig {
     }
 
     /// Get the value of the config in a specific path
+    #[must_use]
     pub fn get_config(&self, path: &[&str]) -> Option<&Value> {
         let mut prev_table = self.config.as_ref()?;
 
@@ -235,6 +239,7 @@ impl StarshipConfig {
     }
 
     /// Get the subset of the table for a custom module by its name
+    #[must_use]
     pub fn get_custom_module_config(&self, module_name: &str) -> Option<&Value> {
         let module_config = self.get_config(&["custom", module_name]);
         if module_config.is_some() {
@@ -248,10 +253,12 @@ impl StarshipConfig {
     }
 
     /// Get the table of all the registered custom modules, if any
+    #[must_use]
     pub fn get_custom_modules(&self) -> Option<&toml::value::Table> {
         self.get_config(&["custom"])?.as_table()
     }
     /// Get the table of all the registered `env_var` modules, if any
+    #[must_use]
     pub fn get_env_var_modules(&self) -> Option<&toml::value::Table> {
         self.get_config(&["env_var"])?.as_table()
     }
@@ -282,6 +289,7 @@ pub struct Style {
 }
 
 impl Style {
+    #[must_use]
     pub fn to_ansi_style(&self, prev: Option<&nu_ansi_term::Style>) -> nu_ansi_term::Style {
         let Some(prev_style) = prev else {
             return self.style;
@@ -362,6 +370,7 @@ impl From<nu_ansi_term::Color> for Style {
  - '`prev_bg`'        (specifies the color should be the previous background color)
  - '<color>'       (see the `parse_color_string` doc for valid color strings)
 */
+#[must_use]
 pub fn parse_style_string(style_string: &str, context: Option<&Context>) -> Option<Style> {
     style_string
         .split_whitespace()

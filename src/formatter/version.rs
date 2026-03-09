@@ -62,6 +62,7 @@ impl<'a> VersionFormatter<'a> {
         })
     }
 
+    #[must_use]
     pub fn format_module_version(
         module_name: &str,
         version: &str,

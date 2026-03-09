@@ -28,6 +28,7 @@ mod utils;
 mod test;
 
 /// Return the number of threads starship should use, if configured.
+#[must_use]
 pub fn num_configured_starship_threads() -> Option<usize> {
     std::env::var("STARSHIP_NUM_THREADS")
         .ok()
@@ -35,6 +36,7 @@ pub fn num_configured_starship_threads() -> Option<usize> {
 }
 
 /// Return the maximum number of threads for the global thread-pool.
+#[must_use]
 pub fn num_rayon_threads() -> usize {
     num_configured_starship_threads()
         // Default to the number of logical cores,

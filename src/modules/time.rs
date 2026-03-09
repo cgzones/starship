@@ -27,7 +27,9 @@ pub fn module<'a>(context: &'a Context) -> Option<Module<'a>> {
 
     log::trace!("Timer module is enabled with format string: {time_format}");
 
-    let formatted_time_string = if config.utc_time_offset != "local" {
+    let formatted_time_string = if config.utc_time_offset == "local" {
+        format_time(time_format, Local::now())
+    } else {
         create_offset_time_string(Utc::now(), config.utc_time_offset, time_format).unwrap_or_else(
             |_| {
                 log::warn!(
@@ -36,8 +38,6 @@ pub fn module<'a>(context: &'a Context) -> Option<Module<'a>> {
                 format_time(time_format, Local::now())
             },
         )
-    } else {
-        format_time(time_format, Local::now())
     };
 
     let parsed = StringFormatter::new(config.format).and_then(|formatter| {
